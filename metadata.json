@@ -1,0 +1,6 @@
+{
+  "name": "Obsidian Ledger",
+  "description": "Precision Financial System บันทึกรายรับ-รายจ่าย รายงานวิเคราะห์พฤติกรรมการเงิน และงบประมาณ",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
