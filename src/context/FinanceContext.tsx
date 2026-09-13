@@ -18,6 +18,9 @@ interface FinanceContextType {
   addTransaction: (tx: Omit<Transaction, 'id' | 'status'>) => void;
   deleteTransaction: (id: string) => void;
   editTransaction: (id: string, updated: Partial<Transaction>) => void;
+  addAccount: (acc: Omit<AccountInfo, 'id'> & { id?: string }) => void;
+  editAccount: (id: string, updated: Partial<AccountInfo>) => void;
+  deleteAccount: (id: string) => void;
   updateBudget: (categoryId: CategoryId, allocated: number) => void;
   addBudget: (budget: CategoryBudget) => void;
   depositToGoal: (goalId: string, amount: number) => void;
@@ -292,6 +295,24 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
   };
 
+  const addAccount = (newAccData: Omit<AccountInfo, 'id'> & { id?: string }) => {
+    const newAcc: AccountInfo = {
+      ...newAccData,
+      id: newAccData.id || `acc-${Date.now()}`,
+    };
+    setAccounts((prev) => [...prev, newAcc]);
+  };
+
+  const deleteAccount = (id: string) => {
+    setAccounts((prev) => prev.filter((a) => a.id !== id));
+  };
+
+  const editAccount = (id: string, updated: Partial<AccountInfo>) => {
+    setAccounts((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, ...updated } : a))
+    );
+  };
+
   const updateBudget = (categoryId: CategoryId, allocated: number) => {
     setBudgets((prev) =>
       prev.map((b) => (b.categoryId === categoryId ? { ...b, allocated } : b))
@@ -384,6 +405,9 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         transactions,
         categories: CATEGORIES,
         accounts,
+        addAccount,
+        editAccount,
+        deleteAccount,
         budgets,
         goals,
         isAddTxModalOpen,

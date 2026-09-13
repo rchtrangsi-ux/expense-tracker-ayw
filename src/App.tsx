@@ -23,14 +23,14 @@ const MainContent: React.FC = () => {
     );
   }
 
-  // If user is not signed in with Google, render the LoginView gate
+  // If user is not logged into an account, render the LoginView gate
   if (!user) {
     return <LoginView />;
   }
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col font-body selection:bg-primary/30 selection:text-primary-fixed">
-      {/* Top Fixed Header with Google Account Info */}
+      {/* Top Fixed Header with Account Info */}
       <Header />
 
       {/* Main Content Area */}

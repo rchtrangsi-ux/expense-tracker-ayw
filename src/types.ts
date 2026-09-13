@@ -10,7 +10,7 @@ export type CategoryId =
   | 'invest'
   | 'other';
 
-export type AccountId = 'scb' | 'ktc' | 'kbank' | 'cash' | 'innovestx';
+export type AccountId = 'scb' | 'ktc' | 'kbank' | 'cash' | 'innovestx' | string;
 
 export interface CategoryInfo {
   id: CategoryId;
@@ -24,7 +24,7 @@ export interface AccountInfo {
   id: AccountId;
   name: string;
   subname: string;
-  type: 'savings' | 'credit' | 'cash' | 'investment';
+  type: 'savings' | 'credit' | 'cash' | 'investment' | 'wallet';
   balance: number;
   icon: string;
 }

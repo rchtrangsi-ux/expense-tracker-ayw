@@ -6,7 +6,7 @@ import { ActiveTab } from '../types';
 
 export const Header: React.FC = () => {
   const { activeTab, setActiveTab, setIsAddTxModalOpen, resetToDefaults, exportCsv, stats, isSyncing } = useFinance();
-  const { user, signOut } = useAuth();
+  const { user, accountUsername, avatarIcon, signOut } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [logoError, setLogoError] = useState(false);
@@ -105,19 +105,12 @@ export const Header: React.FC = () => {
             <button
               onClick={() => setShowProfileMenu((prev) => !prev)}
               type="button"
-              className="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/50 bg-primary flex items-center justify-center text-on-primary hover:opacity-90 transition-opacity cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 shrink-0"
-              title={user?.displayName || 'ข้อมูลผู้ใช้และตั้งค่า'}
+              className="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/50 bg-surface-container-high flex items-center justify-center text-primary hover:opacity-90 transition-opacity cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 shrink-0 shadow-sm"
+              title={`แอคเคาท์: ${accountUsername || user?.displayName || 'ผู้ใช้งาน'}`}
             >
-              {user?.photoURL ? (
-                <img
-                  src={user.photoURL}
-                  alt={user.displayName || 'Google User'}
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <span className="material-symbols-outlined text-[18px]">person</span>
-              )}
+              <span className="material-symbols-outlined text-[18px]">
+                {avatarIcon || 'person'}
+              </span>
             </button>
 
             {/* Profile & Setting Popover */}
@@ -129,24 +122,18 @@ export const Header: React.FC = () => {
                 />
                 <div className="absolute right-0 mt-2 w-72 rounded-xl bg-surface-container p-4 shadow-2xl border border-outline-variant/40 z-50 text-xs text-on-surface space-y-3 animate-in fade-in zoom-in-95">
                   <div className="flex items-center gap-3 pb-3 border-b border-outline-variant/30">
-                    <div className="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/40 bg-primary/20 flex items-center justify-center text-primary font-bold shrink-0">
-                      {user?.photoURL ? (
-                        <img
-                          src={user.photoURL}
-                          alt={user.displayName || 'User'}
-                          className="w-full h-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <span className="material-symbols-outlined text-[20px]">account_circle</span>
-                      )}
+                    <div className="w-10 h-10 rounded-full overflow-hidden border border-primary/40 bg-primary/20 flex items-center justify-center text-primary font-bold shrink-0">
+                      <span className="material-symbols-outlined text-[20px]">
+                        {avatarIcon || 'person'}
+                      </span>
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold text-sm truncate text-on-surface">
-                        {user?.displayName || 'ผู้ใช้งาน Google'}
+                        {accountUsername || user?.displayName || 'แอคเคาท์ส่วนบุคคล'}
                       </p>
-                      <p className="text-[11px] text-on-surface-variant truncate">
-                        {user?.email || 'เข้าสู่ระบบด้วย Google แล้ว'}
+                      <p className="text-[11px] text-tertiary truncate flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                        <span>พื้นที่จัดเก็บข้อมูลคลาวด์</span>
                       </p>
                     </div>
                   </div>
@@ -201,8 +188,8 @@ export const Header: React.FC = () => {
                       }}
                       className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-surface-container-high text-on-surface flex items-center gap-2 cursor-pointer transition-colors border-t border-outline-variant/20 pt-2 text-error"
                     >
-                      <span className="material-symbols-outlined text-[16px]">logout</span>
-                      <span>ออกจากระบบ (Sign Out)</span>
+                      <span className="material-symbols-outlined text-[16px]">switch_account</span>
+                      <span>สลับแอคเคาท์ / ออกจากระบบ</span>
                     </button>
                   </div>
                 </div>

@@ -2,13 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { useFinance } from '../context/FinanceContext';
 import { AccountId, CategoryId, TransactionType } from '../types';
 import { CashflowBarChart } from './CashflowBarChart';
+import { AddAccountModal } from './AddAccountModal';
 
 export const DashboardView: React.FC = () => {
-  const { transactions, addTransaction, deleteTransaction, stats, accounts, goals, setActiveTab, exportCsv } = useFinance();
+  const { transactions, addTransaction, deleteTransaction, stats, accounts, deleteAccount, goals, setActiveTab, exportCsv } = useFinance();
 
   // In-app Delete Confirmation Modal
   const [txToDelete, setTxToDelete] = useState<any | null>(null);
   const [deleteToast, setDeleteToast] = useState<string | null>(null);
+
+  // Financial Account Modal state
+  const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
 
   // Quick Add Bar state
   const [quickType, setQuickType] = useState<TransactionType>('expense');
@@ -242,10 +246,11 @@ export const DashboardView: React.FC = () => {
                 onChange={(e) => setQuickAccount(e.target.value as AccountId)}
                 className="bg-surface-container-low text-on-surface-variant text-xs px-3 py-2.5 rounded-lg focus:outline-none focus:text-on-surface transition-colors cursor-pointer border border-outline-variant/30"
               >
-                <option value="scb">SCB (หลัก)</option>
-                <option value="kbank">KBank</option>
-                <option value="cash">เงินสด</option>
-                <option value="ktc">บัตรเครดิต KTC</option>
+                {accounts.map((acc) => (
+                  <option key={acc.id} value={acc.id}>
+                    {acc.name}
+                  </option>
+                ))}
               </select>
 
               <button
@@ -378,6 +383,96 @@ export const DashboardView: React.FC = () => {
                 style={{ width: `${Math.min(100, Math.max(0, stats.savingsRate))}%` }}
               />
             </div>
+          </div>
+        </section>
+
+        {/* Accounts & Wallets Management Section */}
+        <section className="bg-surface-container rounded-xl p-6 shadow-xl border border-outline-variant/30">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-headline font-semibold text-on-surface">บัญชีและกระเป๋าเงิน (Accounts & Wallets)</h2>
+                <span className="text-[11px] font-mono text-on-surface-variant bg-surface-container-low px-2 py-0.5 rounded border border-outline-variant/20">
+                  {accounts.length} บัญชี
+                </span>
+              </div>
+              <p className="text-xs text-on-surface-variant mt-0.5">
+                จัดการบัญชีสำหรับบันทึกและเก็บข้อมูลเงินสด ธนาคาร บัตรเครดิต และกระเป๋าเงินดิจิทัล
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsAddAccountModalOpen(true)}
+              className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-on-primary text-xs font-semibold rounded-lg hover:bg-primary-fixed-dim transition-all cursor-pointer shadow-sm active:scale-95"
+            >
+              <span className="material-symbols-outlined text-[16px]">add_circle</span>
+              <span>สร้างบัญชีใหม่</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
+            {accounts.map((acc) => (
+              <div
+                key={acc.id}
+                className="p-3.5 bg-surface-container-low rounded-xl border border-outline-variant/30 flex flex-col justify-between hover:border-primary/40 transition-colors group relative shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+                      <span className="material-symbols-outlined text-[18px]">{acc.icon || 'account_balance'}</span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-on-surface truncate">{acc.name}</p>
+                      <p className="text-[10px] text-on-surface-variant truncate">{acc.subname}</p>
+                    </div>
+                  </div>
+                  {accounts.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        deleteAccount(acc.id);
+                        setDeleteToast(`ลบบัญชี "${acc.name}" เรียบร้อยแล้ว`);
+                        setTimeout(() => setDeleteToast(null), 3000);
+                      }}
+                      title="ลบบัญชีนี้"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error hover:bg-surface-container-highest rounded transition-all cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">delete</span>
+                    </button>
+                  )}
+                </div>
+                <div className="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-baseline justify-between">
+                  <span className="text-[10px] font-mono text-on-surface-variant uppercase">
+                    {acc.type === 'savings'
+                      ? 'ออมทรัพย์'
+                      : acc.type === 'cash'
+                      ? 'เงินสด'
+                      : acc.type === 'credit'
+                      ? 'บัตรเครดิต'
+                      : acc.type === 'wallet'
+                      ? 'e-Wallet'
+                      : 'ลงทุน'}
+                  </span>
+                  <span className="text-xs font-mono font-bold text-on-surface">
+                    ฿{acc.balance.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
+            ))}
+
+            {/* Create Account Card CTA */}
+            <button
+              type="button"
+              onClick={() => setIsAddAccountModalOpen(true)}
+              className="p-3.5 rounded-xl border border-dashed border-outline-variant/40 hover:border-primary/60 hover:bg-surface-container-high/40 transition-all flex flex-col items-center justify-center text-center cursor-pointer min-h-[82px] group"
+            >
+              <span className="material-symbols-outlined text-[22px] text-on-surface-variant group-hover:text-primary transition-colors">
+                add_card
+              </span>
+              <span className="text-xs font-medium text-on-surface-variant group-hover:text-on-surface mt-1">
+                + สร้างบัญชีใหม่
+              </span>
+            </button>
           </div>
         </section>
 
@@ -880,6 +975,12 @@ export const DashboardView: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Add Financial Account Modal */}
+      <AddAccountModal
+        isOpen={isAddAccountModalOpen}
+        onClose={() => setIsAddAccountModalOpen(false)}
+      />
     </div>
   );
 };
