@@ -5,7 +5,7 @@ import { APP_LOGO_URL } from '../data/initialData';
 import { ActiveTab } from '../types';
 
 export const Header: React.FC = () => {
-  const { activeTab, setActiveTab, setIsAddTxModalOpen, resetToDefaults, exportCsv, stats } = useFinance();
+  const { activeTab, setActiveTab, setIsAddTxModalOpen, resetToDefaults, exportCsv, stats, isSyncing } = useFinance();
   const { user, signOut } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -75,7 +75,20 @@ export const Header: React.FC = () => {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Firebase Cloud Sync Status */}
+          <div
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high/80 border border-outline-variant/30 text-[11px] text-on-surface-variant font-mono"
+            title="เชื่อมต่อ Firebase Cloud Firestore อัตโนมัติ"
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isSyncing ? 'bg-amber-400 animate-pulse' : 'bg-tertiary'
+              }`}
+            />
+            <span className="text-[11px]">{isSyncing ? 'กำลังซิงค์...' : 'Firebase เชื่อมต่อแล้ว'}</span>
+          </div>
+
           {/* Quick Add CTA */}
           <button
             onClick={() => setIsAddTxModalOpen(true)}
@@ -148,6 +161,15 @@ export const Header: React.FC = () => {
                     <div className="flex justify-between">
                       <span>อัตราการออมปัจจุบัน:</span>
                       <span className="font-mono text-tertiary font-semibold">{stats.savingsRate}%</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-1 border-t border-outline-variant/20 text-[10px]">
+                      <span className="flex items-center gap-1 text-tertiary">
+                        <span className="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                        Cloud Firestore:
+                      </span>
+                      <span className="font-mono text-on-surface-variant truncate max-w-[140px]" title="ai-studio-obsidianledger-9f7d1de0-378e-4ba9-a419-be54e209f863">
+                        เชื่อมต่อสำเร็จ
+                      </span>
                     </div>
                   </div>
 

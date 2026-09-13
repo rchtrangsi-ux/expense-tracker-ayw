@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "UserFinanceData": {
+      "title": "UserFinanceData",
+      "description": "User-specific personal finance records, accounts, budgets, and savings goals",
+      "type": "object",
+      "properties": {
+        "userEmail": {
+          "type": "string",
+          "description": "Email address of the authenticated Google user"
+        },
+        "userName": {
+          "type": "string",
+          "description": "Display name of the authenticated Google user"
+        },
+        "transactions": {
+          "type": "array",
+          "description": "List of user expense, income, and transfer transactions"
+        },
+        "accounts": {
+          "type": "array",
+          "description": "Bank and cash account definitions with live balances"
+        },
+        "budgets": {
+          "type": "array",
+          "description": "Monthly and period category budget allocations"
+        },
+        "goals": {
+          "type": "array",
+          "description": "Savings and financial target goals"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of the most recent sync update"
+        }
+      },
+      "required": ["updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserFinanceData",
+      "description": "Private root document containing all ledger and balance data for the authenticated user"
+    }
+  }
+}
